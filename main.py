@@ -47,6 +47,7 @@ fig.savefig('quantization_demo.png')  # Сохранение файла
 plt.close(fig)
 
 #Дельта функция
+# 
 n = 6
 t = np.linspace(-n, n-1, 2*n)
 fd = np.zeros(2*n)
@@ -62,6 +63,7 @@ fig.savefig('discrete_impulse.png')  # Сохранение файла
 plt.close(fig)
 
 # функции Хевисайда
+# это функция Хевисайда , она отвечает за включения и выключения, в ЦМОИ используется для включения сигнала в определенный момент времени
 n = 6
 t = np.linspace(-n, n-1, 2*n)
 fh = np.heaviside(t, 1)
@@ -100,3 +102,83 @@ plt.close(fig)
 signal1 = np.sin(2 *np.pi * 10 * t )
 signal2 = np.sin(2 *np.pi * 100 * t )
 signal3 = signal1 + signal2
+fft = np.fft.fft(signal1)
+frequencies = np.fft.fftfreq(len(signal1), 1 / sampling_rate)
+fig = plt.figure(figsize=(15, 7), dpi=100)
+plt.plot(frequencies, np.abs(fft))
+plt.xlim(0, sampling_rate/2)
+plt.xlabel('Частота (Гц)')
+plt.ylabel('Амплитуда')
+plt.title('Спектр гармонического сигнала')
+plt.grid(True)
+fig.savefig('spectrum_harmonic_signal1.png')  # Сохранение файла
+plt.close(fig)
+
+fft = np.fft.fft(signal2)
+frequencies = np.fft.fftfreq(len(signal2), 1 / sampling_rate)
+fig = plt.figure(figsize=(15, 7), dpi=100)
+plt.plot(frequencies, np.abs(fft))
+plt.xlim(0, sampling_rate/2)
+plt.xlabel('Частота (Гц)')
+plt.ylabel('Амплитуда')
+plt.title('Спектр гармонического сигнала')
+plt.grid(True)
+fig.savefig('spectrum_harmonic_signal2.png')  # Сохранение файла
+plt.close(fig)
+
+fft = np.fft.fft(signal3)
+frequencies = np.fft.fftfreq(len(signal3), 1 / sampling_rate)
+fig = plt.figure(figsize=(15, 7), dpi=100)
+plt.plot(frequencies, np.abs(fft))
+plt.xlim(0, sampling_rate/2)
+plt.xlabel('Частота (Гц)')
+plt.ylabel('Амплитуда')
+plt.title('Спектр гармонического сигнала')
+plt.grid(True)
+fig.savefig('spectrum_harmonic_signal3.png')  # Сохранение файла
+plt.close(fig)
+
+N = 1024
+x = np.zeros(N)
+x[128:320] = 1
+X = np.fft.fft(x, N)
+Xs = np.fft.fftshift(np.abs(X))
+f = np.linspace(-0.5, 0.5, N, endpoint=True)
+
+fig = plt.figure(figsize=(8, 8), dpi=100)
+
+plt.subplot(1, 2, 1)
+plt.plot(x)
+plt.title('Прямоугольный сигнал')
+plt.xlabel('Отсчеты')
+plt.ylabel('')
+plt.xlim([0, N-1])
+plt.xticks(np.linspace(0, N, 9, endpoint=True))
+plt.grid()
+plt.subplot(1, 2, 2)
+plt.stem(f, Xs)
+plt.title('Амплитудный спектр')
+plt.xlabel('Чистота')
+plt.ylabel('Амплитуда')
+plt.xlim([-1/16, 1/16])
+plt.xticks(np.linspace(-1/16, 1/16, 6, endpoint=True))
+plt.grid()
+plt.tight_layout()
+fig.savefig('Амплитудный спектр.png')  # Сохранение файла
+plt.close(fig)
+
+harmonics = (4, 16, 32, 128, 256, N//2)
+fig = plt.figure(figsize=(14, 9), dpi=100)
+for i, j in enumerate(harmonics):
+    plt.subplot(3, 2, i+1)
+    K = X.copy()
+    K[j:] = 0
+    k = np.real(np.fft.ifft(K))
+    plt.plot(k)
+    plt.title(f'Количество гармоник = {j}')
+    plt.xlabel('Отсчеты')
+    plt.xlim([0, N-1])
+    plt.xticks(np.linspace(0, N, 9, endpoint=True))
+plt.tight_layout()
+fig.savefig('восстановление сигнала.png')  # Сохранение файла
+plt.close(fig)
